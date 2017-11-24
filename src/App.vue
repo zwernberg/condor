@@ -1,6 +1,27 @@
 <template>
   <div id="app">
-    <img src="./assets/logo.png">
+    <b-container fluid>
+      <h2>Bob Division</h2>
+      <b-table striped hover
+
+        :sort-by.sync="sortBy"
+        :sort-desc.sync="sortDesc"
+        :items="bob"
+        :fields="fields">
+        <template slot="_record" slot-scope="data">
+          {{data.item.record.overallWins}} - {{data.item.record.overallLosses}}
+        </template>
+        <template slot="pointsFor" slot-scope="data">
+          {{data.item.record.pointsFor}}
+        </template>
+        <template slot="pointsAgainst" slot-scope="data">
+          {{data.item.record.pointsAgainst}}
+        </template>
+        <template slot="name" slot-scope="data">
+          {{data.item.owners.firstName}} {{data.item.owners.lastName}}
+        </template>
+      </b-table>
+      <h2>Dot Division</h2>
       <b-table striped hover
         :sort-by.sync="sortBy"
         :sort-desc.sync="sortDesc"
@@ -19,24 +40,7 @@
           {{data.item.owners.firstName}} {{data.item.owners.lastName}}
         </template>
       </b-table>
-      <b-table striped hover
-        :sort-by.sync="sortBy"
-        :sort-desc.sync="sortDesc"
-        :items="bob"
-        :fields="fields">
-        <template slot="_record" slot-scope="data">
-          {{data.item.record.overallWins}} - {{data.item.record.overallLosses}}
-        </template>
-        <template slot="pointsFor" slot-scope="data">
-          {{data.item.record.pointsFor}}
-        </template>
-        <template slot="pointsAgainst" slot-scope="data">
-          {{data.item.record.pointsAgainst}}
-        </template>
-        <template slot="name" slot-scope="data">
-          {{data.item.owners.firstName}} {{data.item.owners.lastName}}
-        </template>
-      </b-table>
+    </b-container>
   </div>
 </template>
 
@@ -85,14 +89,19 @@ export default {
     .then(response => {
       // JSON responses are automatically parsed.
       this.standings = response.data;
-      this.dot = this.standings.dot;
-      this.dot = this.standings.dot;
-      this.bob = this.standings.bob;
+      this.dot = this.transformData(this.standings.dot);
+      this.bob = this.transformData(this.standings.bob);
     })
   },
 
   methods: {
-
+    transformData(data) {
+      for (var element in data){
+        //data[element]._rowVariant	 = data[element].overallStanding <= 8 ? 'success' : 'danger';
+        data[element]._cellVariants = data[element].overallStanding <= 4 ? { overallStanding: 'success' } : { overallStanding: 'danger' };
+      };
+      return data;
+    }
   }
 
 }
